@@ -26,7 +26,7 @@ CREATE TABLE `Amigos` (
   `id_usuario` int(11) NOT NULL,
   `id_amigo` int(11) NOT NULL,
   PRIMARY KEY (`id_usuario`,`id_amigo`),
-  KEY `id_amigo` (`id_amigo`),
+  KEY `Amigos_ibfk_2` (`id_amigo`),
   CONSTRAINT `Amigos_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `Usuarios` (`id`),
   CONSTRAINT `Amigos_ibfk_2` FOREIGN KEY (`id_amigo`) REFERENCES `Usuarios` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -52,7 +52,7 @@ CREATE TABLE `Favoritas` (
   `id_usuario` int(11) NOT NULL,
   `id_pelicula` int(11) NOT NULL,
   PRIMARY KEY (`id_usuario`,`id_pelicula`),
-  KEY `id_pelicula` (`id_pelicula`),
+  KEY `Favoritas_ibfk_2` (`id_pelicula`),
   CONSTRAINT `Favoritas_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `Usuarios` (`id`),
   CONSTRAINT `Favoritas_ibfk_2` FOREIGN KEY (`id_pelicula`) REFERENCES `Peliculas` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -75,7 +75,7 @@ DROP TABLE IF EXISTS `Peliculas`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Peliculas` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(255) DEFAULT NULL,
   `imagen` varchar(255) DEFAULT NULL,
   `categoria` varchar(255) DEFAULT NULL,
@@ -100,13 +100,13 @@ DROP TABLE IF EXISTS `Reseñas`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Reseñas` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_usuario` int(11) DEFAULT NULL,
   `id_pelicula` int(11) DEFAULT NULL,
   `comentario` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `id_usuario` (`id_usuario`),
-  KEY `id_pelicula` (`id_pelicula`),
+  KEY `Reseñas_ibfk_1` (`id_usuario`),
+  KEY `Reseñas_ibfk_2` (`id_pelicula`),
   CONSTRAINT `Reseñas_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `Usuarios` (`id`),
   CONSTRAINT `Reseñas_ibfk_2` FOREIGN KEY (`id_pelicula`) REFERENCES `Peliculas` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -129,7 +129,7 @@ DROP TABLE IF EXISTS `Usuarios`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Usuarios` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(255) DEFAULT NULL,
   `apellidos` varchar(255) DEFAULT NULL,
   `nickname` varchar(255) DEFAULT NULL,
@@ -138,8 +138,10 @@ CREATE TABLE `Usuarios` (
   `fecha` datetime DEFAULT NULL,
   `avatar` varchar(255) DEFAULT NULL,
   `token` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_email` (`email`),
+  UNIQUE KEY `unique_nickname` (`nickname`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -162,7 +164,7 @@ CREATE TABLE `Vistas` (
   `id_usuario` int(11) NOT NULL,
   `id_pelicula` int(11) NOT NULL,
   PRIMARY KEY (`id_usuario`,`id_pelicula`),
-  KEY `id_pelicula` (`id_pelicula`),
+  KEY `Vistas_ibfk_2` (`id_pelicula`),
   CONSTRAINT `Vistas_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `Usuarios` (`id`),
   CONSTRAINT `Vistas_ibfk_2` FOREIGN KEY (`id_pelicula`) REFERENCES `Peliculas` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -186,4 +188,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-04-10  9:48:30
+-- Dump completed on 2024-04-15 13:11:44
