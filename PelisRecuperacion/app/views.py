@@ -1,5 +1,6 @@
+from django.forms import ValidationError
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import check_password, make_password
 import json, jwt
@@ -47,6 +48,14 @@ def register(request):
         try:
             datosFormulario = json.loads(request.body)
 
+            
+            if Usuarios.objects.filter(email=datosFormulario['email']).exists():
+                raise ValidationError('El email ya está registrado.')
+
+            
+            if Usuarios.objects.filter(nickname=datosFormulario['nickname']).exists():
+                raise ValidationError('El nickname ya está registrado.')
+            
             contraseñaHasheada  = make_password(datosFormulario['contraseña'])
             
             nuevo_usuario = Usuarios(
@@ -88,3 +97,75 @@ def login(request):
                 return JsonResponse({'error': 'Contraseña incorrecta'}, status=401)
         except Usuarios.DoesNotExist:
             return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+
+# Vista Log out
+@csrf_exempt
+def logout(request):
+    if request.method != 'PATCH':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+    try:
+        error_response, payload = verify_token(request)
+        if error_response:
+            return error_response
+        usuario_id = payload['id']
+    
+    except jwt.ExpiredSignatureError:
+        return JsonResponse({'error': 'Token expirado'}, status=401)
+    except jwt.InvalidTokenError:
+        return JsonResponse({'error': 'Token inválido'}, status=401)
+
+    try:
+        usuario = Usuarios.objects.get(pk=usuario_id)
+        usuario.token = None
+        usuario.save()
+        return JsonResponse({'message': 'Sesión cerrada con éxito'}, status=200)
+    except Usuarios.DoesNotExist:
+        return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+
+#Vista info publica
+@csrf_exempt
+def datos_usuarios(request, id_solicitada):
+    if request.method != 'GET':
+        return HttpResponseNotAllowed(['GET'])
+    
+    try:
+        usuario = Usuarios.objects.get(pk = id_solicitada)
+
+        datos_usuario = {
+            "avatar": usuario.avatar,
+            "nombre": usuario.nombre,
+            "apellidos": usuario.apellidos,
+            "nickname": usuario.nickname,
+            "email": usuario.email,
+            "fecha_registro": usuario.fecha.strftime("%Y-%m-%d")
+        }
+
+        return JsonResponse(datos_usuario)
+
+    except Usuarios.DoesNotExist:
+        return JsonResponse({"error": f"No se encontró el usuario con id: { id_solicitada }"}, status=404)
+    
+
+#Vistas Delete usuario
+@csrf_exempt
+def delete_usuario(request):
+    if request.method != 'DELETE':
+        return HttpResponseNotAllowed(['DELETE'])
+    
+    try:
+        error_response, payload = verify_token(request)
+        if error_response:
+            return error_response
+        
+        usuario_id = payload['id']
+        usuario = Usuarios.objects.get(pk=usuario_id)
+        
+        if usuario_id == usuario.pk:
+            usuario.delete()
+            return JsonResponse({'message': 'Usuario eliminado exitosamente'}, status=200)
+        else:
+            return JsonResponse({'error': 'No tienes permiso para eliminar al usuario'}, status=403)
+    
+    except Usuarios.DoesNotExist:
+        return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
