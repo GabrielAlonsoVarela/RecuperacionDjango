@@ -64,6 +64,10 @@ CREATE TABLE `Favoritas` (
 
 LOCK TABLES `Favoritas` WRITE;
 /*!40000 ALTER TABLE `Favoritas` DISABLE KEYS */;
+INSERT INTO `Favoritas` VALUES
+(10,1),
+(10,5),
+(10,8);
 /*!40000 ALTER TABLE `Favoritas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -80,7 +84,7 @@ CREATE TABLE `Peliculas` (
   `imagen` varchar(255) DEFAULT NULL,
   `categoria` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -89,6 +93,15 @@ CREATE TABLE `Peliculas` (
 
 LOCK TABLES `Peliculas` WRITE;
 /*!40000 ALTER TABLE `Peliculas` DISABLE KEYS */;
+INSERT INTO `Peliculas` VALUES
+(1,'Interestelar','https://m.media-amazon.com/images/S/pv-target-images/79194981293eabf6620ece96eb5a9c1fffa04d3374ae12986e0748800b37b9cf.jpg','Ciencia ficción'),
+(2,'El Padrino','https://es.web.img3.acsta.net/pictures/18/06/12/12/12/0117051.jpg?coixp=49&coiyp=27','Drama'),
+(3,'Titanic','https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRv1bf06dscKoeNdWN5ju1uL_Dh4j9aTg0ZgSDMmr9uoQ&s','Romance'),
+(4,'El Señor de los Anillos: La Comunidad del Anillo','https://pics.filmaffinity.com/El_seanor_de_los_anillos_La_comunidad_del_anillo-744631610-large.jpg','Fantasía'),
+(5,'Inception','https://m.media-amazon.com/images/I/912AErFSBHL._AC_UF894,1000_QL80_.jpg','Aventura'),
+(6,'La La Land','https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZvZ1SDPZWL0J3Ek3PK0T_T5t5MaqJhMkTv_AZ8dxBKQ&s','Musical'),
+(7,'Avengers: Endgame','https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzHzbDjeKjKCTIblqu90DSGGGohZW8exm3QtOF5AZmtA&s','Acción'),
+(8,'Forrest Gump','https://pics.filmaffinity.com/Forrest_Gump-212765827-large.jpg','Drama');
 /*!40000 ALTER TABLE `Peliculas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -141,7 +154,7 @@ CREATE TABLE `Usuarios` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_email` (`email`),
   UNIQUE KEY `unique_nickname` (`nickname`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -150,6 +163,8 @@ CREATE TABLE `Usuarios` (
 
 LOCK TABLES `Usuarios` WRITE;
 /*!40000 ALTER TABLE `Usuarios` DISABLE KEYS */;
+INSERT INTO `Usuarios` VALUES
+(10,'Gabriel','Alonso','Gaba','pbkdf2_sha256$260000$g8EtaqwsQBET0yRQ0L9IeI$g3Rohkf8KU69s5dxI6ir2YlZisTer3pCcuYM4CvlCmI=','gabriel@correo.com','2024-04-29 10:08:57',NULL,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImV4cCI6MTcyMzAyNTMzNywiaWF0IjoxNzE0Mzg1MzM3fQ.hm4N8OqV6jKiCmrpgTjWFPN94ptPb56mG147S-qSo5M');
 /*!40000 ALTER TABLE `Usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -188,4 +203,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-04-15 13:11:44
+-- Dump completed on 2024-04-29 12:44:44

@@ -169,3 +169,25 @@ def delete_usuario(request):
     
     except Usuarios.DoesNotExist:
         return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+
+
+
+#Vistas Buscar Favorita
+@csrf_exempt
+def buscar_favoritos(request, id_solicitada):
+    if request.method != 'GET':
+        return None
+    
+    usuario = Usuarios.objects.get(pk = id_solicitada)
+    lista=Favoritas.objects.filter(id_usuario=usuario)
+    
+    respuesta_final=[]
+    for fila_sql in lista:
+        pelicula_actual=Peliculas.objects.get(id=fila_sql.id_pelicula.id)
+        diccionario={}
+        diccionario['id_pelicula']=pelicula_actual.id
+        diccionario['nombre']=pelicula_actual.nombre
+        diccionario['imagen']=pelicula_actual.imagen
+        diccionario['categoria']=pelicula_actual.categoria
+        respuesta_final.append(diccionario)
+    return JsonResponse(respuesta_final, safe=False)
