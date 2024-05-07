@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import check_password, make_password
+from django.core.exceptions import ObjectDoesNotExist
 import json, jwt
 from .models import Amigos, Peliculas, Vistas, Favoritas, Reseñas, Usuarios
 from django.core.paginator import Paginator
@@ -191,3 +192,33 @@ def buscar_favoritos(request, id_solicitada):
         diccionario['categoria']=pelicula_actual.categoria
         respuesta_final.append(diccionario)
     return JsonResponse(respuesta_final, safe=False)
+
+
+#Vistas Post Favorita
+@csrf_exempt
+def post_favorito(request, id_pelicula):
+    if request.method == 'POST':
+        try:
+            mensaje, payload = verify_token(request)
+            print(payload['id'])
+            if mensaje:
+                return mensaje
+
+            # Verificar si el usuario existe
+            try:
+                usuario = Usuarios.objects.get(pk=payload['id'])
+            except ObjectDoesNotExist:
+                return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+
+            # Verificar si la película existe
+            try:
+                pelicula = Peliculas.objects.get(pk=id_pelicula)
+            except ObjectDoesNotExist:
+                return JsonResponse({'error': 'Película no encontrada'}, status=404)
+
+            # Crear el nuevo objeto Favoritas
+            new_favorito = Favoritas(id_usuario=usuario, id_pelicula=pelicula)
+            new_favorito.save()
+            return JsonResponse({'message': 'Todo correcto'}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)

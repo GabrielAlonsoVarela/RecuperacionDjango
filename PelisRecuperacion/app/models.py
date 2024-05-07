@@ -9,7 +9,7 @@ from django.db import models
 
 
 class Amigos(models.Model):
-    id_usuario = models.OneToOneField('Usuarios', models.DO_NOTHING, db_column='id_usuario', primary_key=True)
+    id_usuario = models.OneToOneField('Usuarios', models.DO_NOTHING, db_column='id_usuario')
     id_amigo = models.ForeignKey('Usuarios', models.DO_NOTHING, db_column='id_amigo', related_name='amigos_amigo')
 
     class Meta:
@@ -25,7 +25,7 @@ class Favoritas(models.Model):
     class Meta:
         managed = False
         db_table = 'Favoritas'
-        unique_together = (('id_usuario', 'id_pelicula'),)
+        unique_together = ('id_usuario', 'id_pelicula')
 
 
 class Peliculas(models.Model):
@@ -64,7 +64,7 @@ class Usuarios(models.Model):
 
 
 class Vistas(models.Model):
-    id_usuario = models.OneToOneField(Usuarios, models.DO_NOTHING, db_column='id_usuario', primary_key=True)
+    id_usuario = models.OneToOneField(Usuarios, models.DO_NOTHING, db_column='id_usuario')
     id_pelicula = models.ForeignKey(Peliculas, models.DO_NOTHING, db_column='id_pelicula')
 
     class Meta:
