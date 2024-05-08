@@ -26,5 +26,6 @@ urlpatterns = [
     path('sesion/', views.logout),
     path('users/<int:id_solicitada>', views.datos_usuarios),
     path('user/', views.delete_usuario),
-    path('users/<int:id_solicitada>/favoritos/', views.buscar_favoritos)
+    path('users/<int:id_solicitada>/favoritos/', views.buscar_favoritos),
+    path('pelicula/<int:id_pelicula>/favorita',views.post_favorito)
 ]

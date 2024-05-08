@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import check_password, make_password
+from django.core.exceptions import ObjectDoesNotExist
 import json, jwt
 from .models import Amigos, Peliculas, Vistas, Favoritas, Reseñas, Usuarios
 from django.core.paginator import Paginator
@@ -178,16 +179,48 @@ def buscar_favoritos(request, id_solicitada):
     if request.method != 'GET':
         return None
     
-    usuario = Usuarios.objects.get(pk = id_solicitada)
-    lista=Favoritas.objects.filter(id_usuario=usuario)
+    usuario = Usuarios.objects.get(pk=id_solicitada)
+    lista_favoritos = Favoritas.objects.filter(id_usuario=usuario).select_related('id_pelicula')
     
-    respuesta_final=[]
-    for fila_sql in lista:
-        pelicula_actual=Peliculas.objects.get(id=fila_sql.id_pelicula.id)
-        diccionario={}
-        diccionario['id_pelicula']=pelicula_actual.id
-        diccionario['nombre']=pelicula_actual.nombre
-        diccionario['imagen']=pelicula_actual.imagen
-        diccionario['categoria']=pelicula_actual.categoria
+    respuesta_final = []
+    for favorito in lista_favoritos:
+        pelicula_actual = favorito.id_pelicula
+        diccionario = {
+            'id_pelicula': pelicula_actual.id,
+            'nombre': pelicula_actual.nombre,
+            'imagen': pelicula_actual.imagen,
+            'categoria': pelicula_actual.categoria
+        }
         respuesta_final.append(diccionario)
+    
     return JsonResponse(respuesta_final, safe=False)
+
+
+#Vistas Post Favorita
+@csrf_exempt
+def post_favorito(request, id_pelicula):
+    if request.method == 'POST':
+        try:
+            mensaje, payload = verify_token(request)
+            print(payload['id'])
+            if mensaje:
+                return mensaje
+
+            # Verificar si el usuario existe
+            try:
+                usuario = Usuarios.objects.get(pk=payload['id'])
+            except ObjectDoesNotExist:
+                return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+
+            # Verificar si la película existe
+            try:
+                pelicula = Peliculas.objects.get(pk=id_pelicula)
+            except ObjectDoesNotExist:
+                return JsonResponse({'error': 'Película no encontrada'}, status=404)
+
+            # Crear el nuevo objeto Favoritas
+            new_favorito = Favoritas(id_usuario=usuario, id_pelicula=pelicula)
+            new_favorito.save()
+            return JsonResponse({'message': 'Todo correcto'}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
