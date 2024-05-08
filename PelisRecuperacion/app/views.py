@@ -224,3 +224,31 @@ def post_favorito(request, id_pelicula):
             return JsonResponse({'message': 'Todo correcto'}, status=200)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
+
+# Vista Delete favorita     
+@csrf_exempt
+def delete_favorita(request, id_pelicula): 
+    if request.method != 'DELETE':
+        return HttpResponseNotAllowed(['DELETE'])
+    
+    try:
+        error_response, payload = verify_token(request)
+        if error_response:
+            return error_response
+        
+        usuario_id = payload['id']
+        usuario = Usuarios.objects.get(pk=usuario_id)
+        
+        # Buscar la entrada en Favoritas y eliminarla
+        try:
+            favorita = Favoritas.objects.get(id_usuario=usuario_id, id_pelicula=id_pelicula)
+            favorita.delete()
+            return JsonResponse({'message': 'Película eliminada de favoritas exitosamente'}, status=200)
+        except Favoritas.DoesNotExist:
+            return JsonResponse({'error': 'La película no está en la lista de favoritas del usuario'}, status=404)
+    
+    except Usuarios.DoesNotExist:
+        return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+    
+    except Usuarios.DoesNotExist:
+        return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
