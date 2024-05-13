@@ -252,3 +252,35 @@ def delete_favorita(request, id_pelicula):
     
     except Usuarios.DoesNotExist:
         return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+
+#Vistas agregar Reseña
+@csrf_exempt
+def agregar_resena(request, id_pelicula):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+    
+    try:
+        error_response, payload = verify_token(request)
+        if error_response:
+            return error_response
+        
+        usuario_id = payload['id']
+        usuario = Usuarios.objects.get(pk=usuario_id)
+        
+        # Obtener el comentario de la solicitud
+        comentario = request.POST.get('comentario', '')
+        
+        # Crear la reseña
+        reseña = Reseñas(
+            id_usuario=usuario,
+            id_pelicula=Peliculas.objects.get(pk=id_pelicula),
+            comentario=comentario
+        )
+        reseña.save()
+        
+        return JsonResponse({'message': 'Reseña agregada exitosamente'}, status=200)
+    
+    except Usuarios.DoesNotExist:
+        return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+    except Peliculas.DoesNotExist:
+        return JsonResponse({'error': 'Película no encontrada'}, status=404)
