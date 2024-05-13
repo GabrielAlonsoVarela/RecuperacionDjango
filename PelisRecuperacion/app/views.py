@@ -268,7 +268,8 @@ def agregar_resena(request, id_pelicula):
         usuario = Usuarios.objects.get(pk=usuario_id)
         
         # Obtener el comentario de la solicitud
-        comentario = request.POST.get('comentario', '')
+        data = json.loads(request.body)
+        comentario = data.get('comentario', '')
         
         # Crear la reseña
         reseña = Reseñas(
