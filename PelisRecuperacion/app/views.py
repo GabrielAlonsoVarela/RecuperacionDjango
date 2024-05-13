@@ -285,3 +285,22 @@ def agregar_resena(request, id_pelicula):
         return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
     except Peliculas.DoesNotExist:
         return JsonResponse({'error': 'Película no encontrada'}, status=404)
+    
+
+#Vistas ver reseñas
+@csrf_exempt
+def ver_resenas(request, id_pelicula):
+    if request.method != 'GET':
+        return HttpResponseNotAllowed(['GET'])
+    
+    try:
+        # Obtener todas las reseñas para la película especificada
+        reseñas = Reseñas.objects.filter(id_pelicula=id_pelicula)
+        
+        # Construir una lista de comentarios
+        comentarios = [{'usuario': reseña.id_usuario.nombre, 'comentario': reseña.comentario} for reseña in reseñas]
+        
+        return JsonResponse(comentarios, safe=False)
+    
+    except Reseñas.DoesNotExist:
+        return JsonResponse({'error': 'No se encontraron reseñas para la película'}, status=404)
