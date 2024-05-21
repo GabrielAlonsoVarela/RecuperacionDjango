@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import check_password, make_password
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 import json, jwt
 from .models import Amigos, Peliculas, Vistas, Favoritas, Reseñas, Usuarios
 from django.core.paginator import Paginator
@@ -303,4 +304,33 @@ def ver_resenas(request, id_pelicula):
     
     except Reseñas.DoesNotExist:
         return JsonResponse({'error': 'No se encontraron reseñas para la película'}, status=404)
+
+#Vistas ver peliculas
+@csrf_exempt
+def ver_peliculas(request):
+    if request.method != 'GET':
+        return HttpResponseNotAllowed(['GET'])
+     
+    try:
+        search = request.GET.get('search', '')
+        limit = int(request.GET.get('limit', 5))
+        order = request.GET.get('order', 'nombre')
+        page_number = int(request.GET.get('page', 1))
+
+        peliculas = Peliculas.objects.filter(Q(nombre__icontains=search)).order_by(order)
+    
+        paginator = Paginator(peliculas, limit)
+        page = paginator.get_page(page_number)
+
+        peliculas_list = list(page.object_list.values())
+
+        return JsonResponse({
+            'peliculas': peliculas_list,
+            'count': paginator.count,
+            'num_pages': paginator.num_pages,
+            'current_page': page_number
+        })
+
+    except Peliculas.DoesNotExist:
+        return JsonResponse({'error': 'No se encontraron películas'}, status=404)
 

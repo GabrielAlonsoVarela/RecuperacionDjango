@@ -30,5 +30,6 @@ urlpatterns = [
     path('pelicula/<int:id_pelicula>/favorita',views.post_favorito),
     path('pelicula/<int:id_pelicula>/delfavorita',views.delete_favorita),
     path('pelicula/<int:id_pelicula>/postresenas',views.agregar_resena),
-    path('pelicula/<int:id_pelicula>/resenas',views.ver_resenas)
+    path('pelicula/<int:id_pelicula>/resenas',views.ver_resenas),
+    path('peliculas/', views.ver_peliculas)
 ]  
