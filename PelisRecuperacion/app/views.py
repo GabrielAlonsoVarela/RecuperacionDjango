@@ -286,7 +286,6 @@ def agregar_resena(request, id_pelicula):
         return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
     except Peliculas.DoesNotExist:
         return JsonResponse({'error': 'Película no encontrada'}, status=404)
-    
 
 #Vistas ver reseñas
 @csrf_exempt
@@ -334,3 +333,4 @@ def ver_peliculas(request):
 
     except Peliculas.DoesNotExist:
         return JsonResponse({'error': 'No se encontraron películas'}, status=404)
+
